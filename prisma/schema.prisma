@@ -1,0 +1,249 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Sex {
+  FEMALE
+  MALE
+  OTHER
+}
+
+enum PatientObjective {
+  WEIGHT_LOSS
+  HYPERTROPHY
+  MAINTENANCE
+  HEALTH
+  PERFORMANCE
+  OTHER
+}
+
+enum PatientStatus {
+  ACTIVE
+  INACTIVE
+  PENDING_RETURN
+}
+
+enum StressLevel {
+  LOW
+  MODERATE
+  HIGH
+}
+
+enum SleepQuality {
+  POOR
+  FAIR
+  GOOD
+  EXCELLENT
+}
+
+enum ActivityLevel {
+  SEDENTARY
+  LIGHT
+  MODERATE
+  INTENSE
+  VERY_INTENSE
+}
+
+enum EnergyFormula {
+  MIFFLIN_ST_JEOR
+  HARRIS_BENEDICT
+}
+
+enum MacroMethod {
+  PERCENTAGE
+  G_PER_KG
+}
+
+enum SkinfoldProtocol {
+  POLLOCK_7
+  GUEDES_3
+  PETROSKI_4
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CANCELED
+  COMPLETED
+}
+
+enum RecipeType {
+  BREAKFAST
+  MORNING_SNACK
+  LUNCH
+  AFTERNOON_SNACK
+  DINNER
+  SUPPER
+  DESSERT
+}
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  patients     Patient[]
+  appointments Appointment[]
+  assessments  AnthropometricAssessment[]
+  recipes      Recipe[]
+}
+
+model Patient {
+  id             String              @id @default(cuid())
+  userId         String
+  fullName       String
+  birthDate      DateTime
+  sex            Sex
+  phone          String
+  email          String?
+  profession     String?
+  objective      PatientObjective
+  heightCm       Float
+  currentWeight  Float
+  desiredWeight  Float?
+  generalNotes   String?
+  tags           String?
+  objectiveTags  String?
+  status         PatientStatus       @default(ACTIVE)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  anamneses      Anamnesis[]
+  calculations   EnergyCalculation[]
+  consultations  Consultation[]
+  appointments   Appointment[]
+  assessments    AnthropometricAssessment[]
+}
+
+model Anamnesis {
+  id                        String        @id @default(cuid())
+  patientId                 String
+  version                   Int           @default(1)
+  mainComplaint             String?
+  nutritionGoal             String?
+  diseaseHistory            String?
+  medications               String?
+  foodAllergies             String?
+  foodIntolerances          String?
+  familyHistory             String?
+  eatingRoutine             String?
+  mealsPerDay               Int?
+  waterIntakeLiters         Float?
+  alcoholConsumption        String?
+  smoking                   String?
+  sleepQuality              SleepQuality?
+  stressLevel               StressLevel?
+  physicalActivity          String?
+  physicalActivityFrequency String?
+  trainingType              String?
+  foodPreferences           String?
+  dislikedFoods             String?
+  dietaryRestrictions       String?
+  bowelFunction             String?
+  generalObservations       String?
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
+  patient                   Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@unique([patientId, version])
+}
+
+model EnergyCalculation {
+  id               String         @id @default(cuid())
+  patientId        String
+  age              Int
+  sex              Sex
+  weightKg         Float
+  heightCm         Float
+  activityLevel    ActivityLevel
+  objective        PatientObjective
+  formula          EnergyFormula   @default(MIFFLIN_ST_JEOR)
+  macroMethod      MacroMethod     @default(PERCENTAGE)
+  carbInput        Float           @default(0)
+  proteinInput     Float           @default(0)
+  fatInput         Float           @default(0)
+  carbsGrams       Float           @default(0)
+  proteinGrams     Float           @default(0)
+  fatGrams         Float           @default(0)
+  carbsKcal        Float           @default(0)
+  proteinKcal      Float           @default(0)
+  fatKcal          Float           @default(0)
+  basalMetabolism  Float
+  activityFactor   Float
+  totalEnergySpend Float
+  suggestedKcal    Float
+  explanation      String
+  createdAt        DateTime       @default(now())
+  patient          Patient        @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+model Consultation {
+  id                 String    @id @default(cuid())
+  patientId          String
+  appointmentDate    DateTime
+  dayWeight          Float?
+  bodyMeasurements   String?
+  observations       String?
+  patientEvolution   String?
+  nutritionPlan      String?
+  nextReturnDate     DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  patient            Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+model Appointment {
+  id          String            @id @default(cuid())
+  userId      String
+  patientId   String
+  scheduledAt DateTime
+  status      AppointmentStatus @default(SCHEDULED)
+  notes       String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient     Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+model AnthropometricAssessment {
+  id               String          @id @default(cuid())
+  userId           String
+  patientId        String
+  assessmentDate   DateTime
+  protocol         SkinfoldProtocol
+  foldsJson        String
+  sumOfFolds       Float
+  bodyDensity      Float
+  bodyFatPercent   Float
+  leanMassKg       Float
+  bodyWeightKg     Float
+  notes            String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient          Patient         @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+model Recipe {
+  id            String     @id @default(cuid())
+  userId        String
+  title         String
+  type          RecipeType
+  servings      Int
+  kcal          Float
+  carbs         Float
+  proteins      Float
+  fats          Float
+  ingredients   String
+  preparation   String
+  notes         String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

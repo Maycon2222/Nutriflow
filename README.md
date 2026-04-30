@@ -1,36 +1,154 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+﻿# NutriFlow - MVP para Nutricionista
 
-## Getting Started
+Aplicação web completa (MVP) para nutricionista gerenciar pacientes, anamnese nutricional, consultas e cálculo de gasto energético.
 
-First, run the development server:
+## Stack
+- Next.js 16 (App Router, TypeScript)
+- Tailwind CSS
+- Prisma ORM
+- SQLite (local)
+- Autenticação por sessão via cookie seguro + senha criptografada (`bcryptjs`)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Funcionalidades implementadas no MVP
+
+### 1. Autenticação
+- Login de administrador (`/login`)
+- Cadastro de administrador
+- Logout
+- Rotas internas protegidas por `proxy.ts`
+- Estrutura pronta para múltiplas nutricionistas (todos os dados vinculados a `userId`)
+
+### 2. Dashboard
+- Total de pacientes
+- Pacientes em acompanhamento
+- Pacientes recentes
+- Atalhos para cadastro, busca e anamnese
+
+### 3. Pacientes
+- Cadastro completo de paciente
+- Idade automática por data de nascimento
+- Status (`ativo`, `inativo`, `retorno pendente`)
+- Tags
+- Edição e exclusão com confirmação em modal
+- Busca por nome, telefone e termos de objetivo
+- Filtro por objetivo e ordenação por nome/cadastro/atualização
+
+### 4. Perfil do paciente
+- Dados pessoais e antropométricos
+- Histórico de consultas
+- Anamneses registradas
+- Cálculos energéticos registrados
+- Gráfico de evolução de peso (quando há dados de consulta)
+
+### 5. Anamnese nutricional
+- Formulário completo com os campos solicitados
+- Salvamento no histórico do paciente
+
+### 6. Cálculo energético
+- Fórmula Mifflin-St Jeor para TMB
+- Fator de atividade
+- GET
+- Sugestão calórica por objetivo
+- Explicação resumida do cálculo
+- Salvamento no histórico do paciente
+
+### 7. Histórico de consultas
+- Registro de consulta com peso, medidas, evolução, conduta e próximo retorno
+
+## Estrutura de pastas
+
+```text
+src/
+  app/
+    (protected)/
+    api/
+    login/
+  components/
+    layout/
+    patients/
+    ui/
+  database/
+  hooks/
+  models/
+  services/
+    export/
+    calendar/
+  utils/
+prisma/
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Banco de dados (Prisma)
+Modelos criados:
+- `User`
+- `Patient`
+- `Anamnesis`
+- `EnergyCalculation`
+- `Consultation`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Relação principal:
+- 1 `User` -> N `Patient`
+- 1 `Patient` -> N anamneses, N cálculos, N consultas
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Como rodar localmente
 
-## Learn More
+1. Instalar dependências:
+```bash
+npm install
+```
 
-To learn more about Next.js, take a look at the following resources:
+2. Configurar variáveis de ambiente:
+```bash
+cp .env.example .env
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Gerar Prisma Client:
+```bash
+npm run db:generate
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. Criar tabelas no banco local:
+```bash
+npm run db:push
+```
 
-## Deploy on Vercel
+5. Popular dados de exemplo:
+```bash
+npm run db:seed
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+6. Rodar em desenvolvimento:
+```bash
+npm run dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Acesse: `http://localhost:3000`
+
+## Credenciais de teste (seed)`r`n- As credenciais padrao nao sao mais exibidas no repositorio por seguranca.`r`n- Defina credenciais personalizadas diretamente no ambiente local/seu seed privado.`r`n`r`n## Scripts uteis
+- `npm run dev`
+- `npm run lint`
+- `npm run build`
+- `npm run db:generate`
+- `npm run db:push`
+- `npm run db:seed`
+
+## Segurança aplicada
+- Senhas com hash (`bcryptjs`)
+- Validação de payload com `zod`
+- Rotas protegidas
+- Escopo por usuário autenticado
+- API bloqueia acesso sem sessão válida
+
+## Estrutura pronta para expansão
+Já preparada com base inicial para:
+- Exportação CSV (`GET /api/exports/patients-csv`)
+- Geração de PDF (stub em `src/services/export/pdf.ts`)
+- Gráficos (implementado gráfico de peso)
+- Calendário de retornos (base em `src/services/calendar/returns.ts`)
+
+## Próximos passos recomendados
+- Implementar exportação PDF real (ex.: `pdf-lib`)
+- Tela de calendário com retornos futuros
+- Painel de gráficos adicionais (aderência, IMC, circunferências)
+- Tema escuro persistente
+- Troca de SQLite para PostgreSQL em produção
+
