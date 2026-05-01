@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from "crypto";
+﻿import { createHash, randomBytes } from "crypto";
 import { prisma } from "@/database/prisma";
 
 const TOKEN_EXPIRATION_HOURS = 24;
@@ -50,7 +50,7 @@ export async function sendEmailVerificationMessage(recipientEmail: string, link:
     body: JSON.stringify({
       from: sender,
       to: recipientEmail,
-      subject: "Confirme seu e-mail no NutriFlow",
+      subject: "Confirme seu e-mail no NutriAcademy",
       html: `<p>Confirme seu e-mail para ativar sua conta:</p><p><a href="${link}">${link}</a></p>`,
     }),
   });
@@ -85,4 +85,5 @@ export async function consumeEmailVerificationToken(rawToken: string) {
 
   return token.user;
 }
+
 

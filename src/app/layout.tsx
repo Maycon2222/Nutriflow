@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "NutriFlow",
-  description: "Plataforma de gestão clínica para nutricionistas",
+  title: "NutriAcademy",
+  description: "Plataforma de gestao clinica para nutricionistas",
 };
 
 export default function RootLayout({

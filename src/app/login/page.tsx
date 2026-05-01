@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -57,7 +57,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-rose-100 via-emerald-50 to-sky-100 p-4">
       <div className="w-full max-w-md rounded-2xl border border-white/80 bg-white/90 p-6 shadow-xl backdrop-blur">
-        <h1 className="text-2xl font-bold text-teal-700">NutriFlow</h1>
+        <h1 className="text-2xl font-bold text-teal-700">NutriAcademy</h1>
         <p className="mt-1 text-sm text-slate-500">Plataforma clinica para gestao nutricional</p>
 
         <div className="mt-6 grid grid-cols-2 rounded-lg bg-slate-100 p-1">
@@ -103,3 +103,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

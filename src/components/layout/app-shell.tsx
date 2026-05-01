@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -17,7 +17,7 @@ const links = [
   { href: "/appointments", label: "Agendamentos", icon: CalendarDays },
   { href: "/patients", label: "Pacientes", icon: Users },
   { href: "/patients/new", label: "Novo Paciente", icon: UserPlus },
-  { href: "/settings", label: "Configurações", icon: Settings },
+  { href: "/settings", label: "ConfiguraÃ§Ãµes", icon: Settings },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -49,7 +49,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-emerald-50 to-sky-50">
       <div className="mx-auto flex w-full max-w-7xl gap-4 p-4 md:p-6">
         <aside className="hidden w-64 shrink-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:block">
-          <h1 className="mb-6 text-xl font-bold text-teal-700">NutriFlow</h1>
+          <h1 className="mb-6 text-xl font-bold text-teal-700">NutriAcademy</h1>
           <nav className="space-y-2">
             {links.map((link) => {
               const Icon = link.icon;
@@ -78,7 +78,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <main className="flex-1">
           <header className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <p className="text-sm text-slate-500">Gestão clínica nutricional</p>
+              <p className="text-sm text-slate-500">GestÃ£o clÃ­nica nutricional</p>
               <form onSubmit={handleGlobalSearch} className="flex w-full gap-2 md:w-auto">
                 <Input
                   placeholder="Busca global: nome, telefone ou tags..."
@@ -98,3 +98,4 @@ export function AppShell({ children }: { children: ReactNode }) {
     </div>
   );
 }
+

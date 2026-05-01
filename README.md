@@ -1,4 +1,4 @@
-﻿# NutriFlow - MVP para Nutricionista
+﻿# NutriAcademy - MVP para Nutricionista
 
 Aplicação web completa (MVP) para nutricionista gerenciar pacientes, anamnese nutricional, consultas e cálculo de gasto energético.
 
@@ -151,4 +151,5 @@ Já preparada com base inicial para:
 - Painel de gráficos adicionais (aderência, IMC, circunferências)
 - Tema escuro persistente
 - Troca de SQLite para PostgreSQL em produção
+
 

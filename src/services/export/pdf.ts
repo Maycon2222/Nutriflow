@@ -1,4 +1,4 @@
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+﻿import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 
 type PlanPdfData = {
   patientName: string;
@@ -41,7 +41,7 @@ export async function generatePlanPdf(data: PlanPdfData) {
     color: rgb(0.06, 0.58, 0.53),
   });
 
-  page.drawText("Plano Alimentar - NutriFlow", {
+  page.drawText("Plano Alimentar - NutriAcademy", {
     x: 52,
     y: 785,
     size: 17,
@@ -123,3 +123,4 @@ export async function generatePlanPdf(data: PlanPdfData) {
 
   return doc.save();
 }
+
