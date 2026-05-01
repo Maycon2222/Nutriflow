@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ErrorText } from "@/components/ui/feedback";
+import { ErrorText, SuccessText } from "@/components/ui/feedback";
 import { Input } from "@/components/ui/input";
 import { apiClient } from "@/services/api-client";
 
@@ -12,6 +12,12 @@ export default function LoginPage() {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const verifiedParam = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("verified") : null;
+  const [success, setSuccess] = useState<string | null>(
+    verifiedParam === "success" ? "E-mail verificado com sucesso. Agora voce ja pode entrar." : null,
+  );
+  const verificationError =
+    verifiedParam === "invalid-token" || verifiedParam === "missing-token" ? "Link de verificacao invalido ou expirado." : null;
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -23,10 +29,22 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
     try {
-      await apiClient(`/api/auth/${mode}`, {
+      const result = await apiClient<{ requiresVerification?: boolean }>(`/api/auth/${mode}`, {
         method: "POST",
         body: mode === "register" ? formData : { email: formData.email, password: formData.password },
       });
+
+      if (mode === "register") {
+        if (!result.requiresVerification) {
+          router.push("/dashboard");
+          router.refresh();
+          return;
+        }
+        setSuccess("Conta criada. Verifique seu e-mail para ativar o login.");
+        setMode("login");
+        return;
+      }
+
       router.push("/dashboard");
       router.refresh();
     } catch (submitError) {
@@ -74,6 +92,8 @@ export default function LoginPage() {
             <label className="mb-1 block text-sm font-medium text-slate-700">Senha</label>
             <Input type="password" value={formData.password} onChange={(event) => setFormData({ ...formData, password: event.target.value })} required />
           </div>
+          <SuccessText message={success} />
+          <ErrorText message={verificationError} />
           <ErrorText message={error} />
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Aguarde..." : mode === "login" ? "Entrar na plataforma" : "Criar conta"}

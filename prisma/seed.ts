@@ -9,6 +9,7 @@ import {
   MacroMethod,
   RecipeType,
   SkinfoldProtocol,
+  UserRole,
 } from "@prisma/client";
 import { hashSync } from "bcryptjs";
 
@@ -25,6 +26,8 @@ async function main() {
       name: "Dra. Nutricionista",
       email: adminEmail,
       passwordHash: hashSync(adminPassword, 10),
+      role: UserRole.ADMIN,
+      emailVerifiedAt: new Date(),
     },
   });
 

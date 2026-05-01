@@ -14,6 +14,7 @@ type SessionPayload = {
   userId: string;
   email: string;
   name: string;
+  role?: "ADMIN" | "USER";
 };
 
 export async function createSession(payload: SessionPayload) {

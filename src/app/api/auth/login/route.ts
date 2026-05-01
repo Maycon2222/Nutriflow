@@ -1,29 +1,34 @@
-import { compare } from "bcryptjs";
+﻿import { compare } from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
+import { apiError } from "@/app/api/_helpers";
 import { prisma } from "@/database/prisma";
 import { authConfig, createSession } from "@/utils/auth";
 import { loginSchema } from "@/utils/validation";
-import { apiError } from "@/app/api/_helpers";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const parsed = loginSchema.parse(body);
 
+    const email = parsed.email.trim().toLowerCase();
     const user = await prisma.user.findUnique({
-      where: { email: parsed.email },
+      where: { email },
     });
 
     if (!user) {
-      return NextResponse.json({ error: "Usuário ou senha inválidos." }, { status: 401 });
+      return NextResponse.json({ error: "Usuario ou senha invalidos." }, { status: 401 });
     }
 
     const validPassword = await compare(parsed.password, user.passwordHash);
     if (!validPassword) {
-      return NextResponse.json({ error: "Usuário ou senha inválidos." }, { status: 401 });
+      return NextResponse.json({ error: "Usuario ou senha invalidos." }, { status: 401 });
     }
 
-    const token = await createSession({ userId: user.id, email: user.email, name: user.name });
+    if (!user.emailVerifiedAt) {
+      return NextResponse.json({ error: "Confirme seu e-mail antes de entrar na plataforma." }, { status: 403 });
+    }
+
+    const token = await createSession({ userId: user.id, email: user.email, name: user.name, role: user.role });
 
     const response = NextResponse.json({ message: "Login efetuado com sucesso." });
     response.cookies.set(authConfig.SESSION_COOKIE, token, {
