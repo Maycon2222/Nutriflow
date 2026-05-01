@@ -36,6 +36,9 @@ export async function sendPasswordResetMessage(recipientEmail: string, link: str
   const sender = process.env.RESEND_FROM_EMAIL;
 
   if (!apiKey || !sender) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("Servico de e-mail nao configurado. Defina RESEND_API_KEY e RESEND_FROM_EMAIL.");
+    }
     console.log(`[password-reset] ${recipientEmail} => ${link}`);
     return;
   }
@@ -80,4 +83,3 @@ export async function markPasswordResetTokenUsed(id: string) {
     data: { usedAt: new Date() },
   });
 }
-

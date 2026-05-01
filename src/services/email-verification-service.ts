@@ -37,6 +37,9 @@ export async function sendEmailVerificationMessage(recipientEmail: string, link:
   const sender = process.env.RESEND_FROM_EMAIL;
 
   if (!apiKey || !sender) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("Servico de e-mail nao configurado. Defina RESEND_API_KEY e RESEND_FROM_EMAIL.");
+    }
     console.log(`[email-verification] ${recipientEmail} => ${link}`);
     return;
   }
