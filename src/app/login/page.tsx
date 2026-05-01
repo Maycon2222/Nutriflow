@@ -13,12 +13,7 @@ export default function LoginPage() {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const verifiedParam = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("verified") : null;
-  const [success, setSuccess] = useState<string | null>(
-    verifiedParam === "success" ? "E-mail verificado com sucesso. Agora voce ja pode entrar." : null,
-  );
-  const verificationError =
-    verifiedParam === "invalid-token" || verifiedParam === "missing-token" ? "Link de verificacao invalido ou expirado." : null;
+  const [success, setSuccess] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -37,11 +32,11 @@ export default function LoginPage() {
 
       if (mode === "register") {
         if (!result.requiresVerification) {
-          router.push("/dashboard");
-          router.refresh();
+          setSuccess("Conta criada com sucesso. Agora voce ja pode entrar.");
+          setMode("login");
           return;
         }
-        setSuccess("Conta criada. Verifique seu e-mail para ativar o login.");
+        setSuccess("Conta criada.");
         setMode("login");
         return;
       }
@@ -99,7 +94,6 @@ export default function LoginPage() {
             </Link>
           ) : null}
           <SuccessText message={success} />
-          <ErrorText message={verificationError} />
           <ErrorText message={error} />
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Aguarde..." : mode === "login" ? "Entrar na plataforma" : "Criar conta"}

@@ -24,10 +24,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Usuario ou senha invalidos." }, { status: 401 });
     }
 
-    if (!user.emailVerifiedAt && user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Confirme seu e-mail antes de entrar na plataforma." }, { status: 403 });
-    }
-
     const token = await createSession({ userId: user.id, email: user.email, name: user.name, role: user.role });
 
     const response = NextResponse.json({ message: "Login efetuado com sucesso." });

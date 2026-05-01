@@ -3,11 +3,6 @@ import { hash } from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 import { apiError } from "@/app/api/_helpers";
 import { prisma } from "@/database/prisma";
-import {
-  buildEmailVerificationLink,
-  createEmailVerificationToken,
-  sendEmailVerificationMessage,
-} from "@/services/email-verification-service";
 import { authConfig, createSession } from "@/utils/auth";
 import { registerSchema } from "@/utils/validation";
 
@@ -25,32 +20,19 @@ export async function POST(request: NextRequest) {
     const passwordHash = await hash(parsed.password, 10);
     const userCount = await prisma.user.count();
     const role = userCount === 0 ? UserRole.ADMIN : UserRole.USER;
-    const shouldAutoVerify = role === UserRole.ADMIN;
-
     const user = await prisma.user.create({
       data: {
         name: parsed.name,
         email,
         passwordHash,
         role,
-        emailVerifiedAt: shouldAutoVerify ? new Date() : null,
+        emailVerifiedAt: new Date(),
       },
     });
 
-    if (!shouldAutoVerify) {
-      const verificationToken = await createEmailVerificationToken(user.id);
-      const verificationLink = buildEmailVerificationLink(verificationToken);
-      await sendEmailVerificationMessage(user.email, verificationLink);
-
-      return NextResponse.json({
-        message: "Conta criada. Verifique seu e-mail para ativar o acesso.",
-        requiresVerification: true,
-      });
-    }
-
     const token = await createSession({ userId: user.id, email: user.email, name: user.name, role: user.role });
     const response = NextResponse.json({
-      message: "Conta de administrador criada com sucesso.",
+      message: "Conta criada com sucesso.",
       requiresVerification: false,
     });
 
