@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ErrorText, SuccessText } from "@/components/ui/feedback";
 import { Input } from "@/components/ui/input";
@@ -80,7 +81,7 @@ export default function LoginPage() {
         <form onSubmit={onSubmit} className="mt-5 space-y-4">
           {mode === "register" && (
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Nome da nutricionista</label>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Nome profissional</label>
               <Input value={formData.name} onChange={(event) => setFormData({ ...formData, name: event.target.value })} required />
             </div>
           )}
@@ -92,6 +93,11 @@ export default function LoginPage() {
             <label className="mb-1 block text-sm font-medium text-slate-700">Senha</label>
             <Input type="password" value={formData.password} onChange={(event) => setFormData({ ...formData, password: event.target.value })} required />
           </div>
+          {mode === "login" ? (
+            <Link href="/forgot-password" className="inline-block text-xs font-medium text-teal-700 hover:text-teal-800">
+              Esqueci minha senha
+            </Link>
+          ) : null}
           <SuccessText message={success} />
           <ErrorText message={verificationError} />
           <ErrorText message={error} />

@@ -26,6 +26,15 @@ export const registerSchema = z.object({
   password: z.string().min(6, "A senha deve ter ao menos 6 caracteres"),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("E-mail invalido"),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(10, "Token invalido"),
+  password: z.string().min(6, "A senha deve ter ao menos 6 caracteres"),
+});
+
 export const patientSchema = z.object({
   fullName: z.string().min(3, "Nome obrigatorio"),
   birthDate: z.string().min(1, "Data de nascimento obrigatoria"),
