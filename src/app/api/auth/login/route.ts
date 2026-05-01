@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Usuario ou senha invalidos." }, { status: 401 });
     }
 
-    if (!user.emailVerifiedAt) {
+    if (!user.emailVerifiedAt && user.role !== "ADMIN") {
       return NextResponse.json({ error: "Confirme seu e-mail antes de entrar na plataforma." }, { status: 403 });
     }
 
