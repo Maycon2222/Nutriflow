@@ -17,7 +17,7 @@ const links = [
   { href: "/appointments", label: "Agendamentos", icon: CalendarDays },
   { href: "/patients", label: "Pacientes", icon: Users },
   { href: "/patients/new", label: "Novo Paciente", icon: UserPlus },
-  { href: "/settings", label: "ConfiguraÃ§Ãµes", icon: Settings },
+  { href: "/settings", label: "Configuracoes", icon: Settings },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -78,7 +78,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <main className="flex-1">
           <header className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <p className="text-sm text-slate-500">GestÃ£o clÃ­nica nutricional</p>
+              <p className="text-sm text-slate-500">Gestao clinica nutricional</p>
               <form onSubmit={handleGlobalSearch} className="flex w-full gap-2 md:w-auto">
                 <Input
                   placeholder="Busca global: nome, telefone ou tags..."
@@ -98,4 +98,3 @@ export function AppShell({ children }: { children: ReactNode }) {
     </div>
   );
 }
-
