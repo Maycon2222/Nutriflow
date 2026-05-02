@@ -41,6 +41,7 @@ export default async function PatientProfilePage({ params }: { params: Promise<{
   const objectiveTags = parseCsvTags(patient.objectiveTags);
   const latestAnamnese = patient.anamneses[0];
   const firstAnamnese = patient.anamneses[patient.anamneses.length - 1];
+  const latestAssessment = patient.assessments[patient.assessments.length - 1] ?? null;
 
   return (
     <div className="space-y-4">
@@ -209,6 +210,17 @@ export default async function PatientProfilePage({ params }: { params: Promise<{
             currentWeight: patient.currentWeight,
             objective: patient.objective,
           }}
+          latestAssessment={
+            latestAssessment
+              ? {
+                  protocol: latestAssessment.protocol,
+                  bodyFatPercent: latestAssessment.bodyFatPercent,
+                  leanMassKg: latestAssessment.leanMassKg,
+                  sumOfFolds: latestAssessment.sumOfFolds,
+                  assessmentDate: latestAssessment.assessmentDate.toISOString(),
+                }
+              : null
+          }
         />
       </Card>
     </div>

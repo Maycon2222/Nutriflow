@@ -26,6 +26,14 @@ type MacroInput = {
   weightKg: number;
 };
 
+type AnthropometryMacroInput = {
+  objective: PatientObjective;
+  suggestedKcal: number;
+  weightKg: number;
+  leanMassKg: number;
+  bodyFatPercent: number;
+};
+
 export function calculateBasalMetabolism({ weightKg, heightCm, age, sex, formula }: Omit<EnergyInput, "activityLevel" | "objective">) {
   if (formula === EnergyFormula.HARRIS_BENEDICT) {
     if (sex === Sex.MALE) {
@@ -92,5 +100,69 @@ export function calculateMacros({ method, carbsInput, proteinInput, fatInput, su
     carbsKcal,
     proteinKcal,
     fatKcal,
+  };
+}
+
+export function calculateMacrosFromAnthropometry({
+  objective,
+  suggestedKcal,
+  weightKg,
+  leanMassKg,
+  bodyFatPercent,
+}: AnthropometryMacroInput) {
+  const proteinFactorByObjective: Record<PatientObjective, number> = {
+    [PatientObjective.WEIGHT_LOSS]: 2.4,
+    [PatientObjective.HYPERTROPHY]: 2.2,
+    [PatientObjective.MAINTENANCE]: 2.0,
+    [PatientObjective.HEALTH]: 1.9,
+    [PatientObjective.PERFORMANCE]: 2.1,
+    [PatientObjective.OTHER]: 1.9,
+  };
+
+  const fatFactorBaseByObjective: Record<PatientObjective, number> = {
+    [PatientObjective.WEIGHT_LOSS]: 0.7,
+    [PatientObjective.HYPERTROPHY]: 0.9,
+    [PatientObjective.MAINTENANCE]: 0.8,
+    [PatientObjective.HEALTH]: 0.8,
+    [PatientObjective.PERFORMANCE]: 0.85,
+    [PatientObjective.OTHER]: 0.8,
+  };
+
+  const proteinFactor = proteinFactorByObjective[objective];
+  const fatFactor = bodyFatPercent >= 25 && objective === PatientObjective.WEIGHT_LOSS ? 0.65 : fatFactorBaseByObjective[objective];
+  const minFatGrams = weightKg * 0.6;
+
+  const proteinGrams = leanMassKg * proteinFactor;
+  let fatGrams = Math.max(minFatGrams, weightKg * fatFactor);
+
+  let carbsKcal = suggestedKcal - (proteinGrams * 4 + fatGrams * 9);
+  if (carbsKcal < 0) {
+    fatGrams = minFatGrams;
+    carbsKcal = suggestedKcal - (proteinGrams * 4 + fatGrams * 9);
+  }
+
+  const carbsGrams = Math.max(weightKg * 0.5, carbsKcal / 4);
+
+  const proteinKcal = proteinGrams * 4;
+  const fatKcal = fatGrams * 9;
+  const finalCarbsKcal = carbsGrams * 4;
+  const totalKcal = finalCarbsKcal + proteinKcal + fatKcal;
+
+  const carbsPercent = (finalCarbsKcal / totalKcal) * 100;
+  const proteinPercent = (proteinKcal / totalKcal) * 100;
+  const fatPercent = (fatKcal / totalKcal) * 100;
+
+  return {
+    carbsGrams,
+    proteinGrams,
+    fatGrams,
+    carbsKcal: finalCarbsKcal,
+    proteinKcal,
+    fatKcal,
+    carbsPercent,
+    proteinPercent,
+    fatPercent,
+    explanation:
+      "Macros estimados por composicao corporal (dobras): proteina por massa magra, gordura por peso e carboidrato pelo restante calorico.",
   };
 }

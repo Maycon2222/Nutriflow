@@ -28,7 +28,17 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const calculation = await prisma.energyCalculation.create({
       data: {
         patientId: id,
-        ...parsed,
+        age: parsed.age,
+        sex: parsed.sex,
+        weightKg: parsed.weightKg,
+        heightCm: parsed.heightCm,
+        activityLevel: parsed.activityLevel,
+        objective: parsed.objective,
+        formula: parsed.formula,
+        macroMethod: parsed.macroMethod,
+        carbInput: parsed.carbsInput,
+        proteinInput: parsed.proteinInput,
+        fatInput: parsed.fatInput,
         ...result,
         ...macros,
       },

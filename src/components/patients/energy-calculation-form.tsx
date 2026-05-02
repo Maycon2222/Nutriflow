@@ -4,6 +4,7 @@ import {
   ActivityLevel,
   EnergyFormula,
   MacroMethod,
+  SkinfoldProtocol,
   Patient,
   PatientObjective,
   Sex,
@@ -23,10 +24,17 @@ import {
   SEX_OPTIONS,
 } from "@/models/patient";
 import { apiClient } from "@/services/api-client";
-import { calculateEnergy, calculateMacros } from "@/utils/energy";
+import { calculateEnergy, calculateMacros, calculateMacrosFromAnthropometry } from "@/utils/energy";
 
 type Props = {
   patient: Pick<Patient, "id" | "birthDate" | "sex" | "heightCm" | "currentWeight" | "objective">;
+  latestAssessment?: {
+    protocol: SkinfoldProtocol;
+    bodyFatPercent: number;
+    leanMassKg: number;
+    sumOfFolds: number;
+    assessmentDate: string;
+  } | null;
 };
 
 type EnergyFormState = {
@@ -43,9 +51,28 @@ type EnergyFormState = {
   fatInput: number;
 };
 
-export function EnergyCalculationForm({ patient }: Props) {
+export function EnergyCalculationForm({ patient, latestAssessment }: Props) {
   const router = useRouter();
   const initialAge = Math.max(1, new Date().getFullYear() - new Date(patient.birthDate).getFullYear());
+  const baselineEnergy = calculateEnergy({
+    age: initialAge,
+    sex: patient.sex,
+    weightKg: patient.currentWeight,
+    heightCm: patient.heightCm,
+    activityLevel: ActivityLevel.MODERATE,
+    objective: patient.objective,
+    formula: EnergyFormula.MIFFLIN_ST_JEOR,
+  });
+  const anthropometryPreset = latestAssessment
+    ? calculateMacrosFromAnthropometry({
+        objective: patient.objective,
+        suggestedKcal: baselineEnergy.suggestedKcal,
+        weightKg: patient.currentWeight,
+        leanMassKg: latestAssessment.leanMassKg,
+        bodyFatPercent: latestAssessment.bodyFatPercent,
+      })
+    : null;
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -58,9 +85,9 @@ export function EnergyCalculationForm({ patient }: Props) {
     objective: patient.objective,
     formula: EnergyFormula.MIFFLIN_ST_JEOR,
     macroMethod: MacroMethod.PERCENTAGE,
-    carbsInput: 40,
-    proteinInput: 30,
-    fatInput: 30,
+    carbsInput: anthropometryPreset ? Number(anthropometryPreset.carbsPercent.toFixed(1)) : 40,
+    proteinInput: anthropometryPreset ? Number(anthropometryPreset.proteinPercent.toFixed(1)) : 30,
+    fatInput: anthropometryPreset ? Number(anthropometryPreset.fatPercent.toFixed(1)) : 30,
   });
 
   const preview = useMemo(() => {
@@ -202,6 +229,11 @@ export function EnergyCalculationForm({ patient }: Props) {
           CHO: {preview.carbsGrams.toFixed(1)} g ({preview.carbsKcal.toFixed(0)} kcal) | PTN: {preview.proteinGrams.toFixed(1)} g ({preview.proteinKcal.toFixed(0)} kcal) | FAT: {preview.fatGrams.toFixed(1)} g ({preview.fatKcal.toFixed(0)} kcal)
         </p>
         <p className="mt-2 text-xs text-slate-600">{preview.explanation}</p>
+        {latestAssessment ? (
+          <p className="mt-1 text-xs text-slate-600">
+            Base antropometrica ativa: protocolo {latestAssessment.protocol}, soma {latestAssessment.sumOfFolds.toFixed(1)} mm, gordura {latestAssessment.bodyFatPercent.toFixed(2)}% e massa magra {latestAssessment.leanMassKg.toFixed(2)} kg.
+          </p>
+        ) : null}
       </Card>
 
       <ErrorText message={error} />
