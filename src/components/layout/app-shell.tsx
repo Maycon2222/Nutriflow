@@ -47,7 +47,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-emerald-50 to-sky-50">
-      <div className="mx-auto flex w-full max-w-7xl gap-4 p-4 md:p-6">
+      <div className="mx-auto flex w-full max-w-7xl gap-4 p-4 pb-24 md:p-6 md:pb-6">
         <aside className="hidden w-64 shrink-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:block">
           <h1 className="mb-6 text-xl font-bold text-teal-700">NutriAcademy</h1>
           <nav className="space-y-2">
@@ -76,10 +76,41 @@ export function AppShell({ children }: { children: ReactNode }) {
         </aside>
 
         <main className="flex-1">
+          <div className="mb-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm md:hidden">
+            <div className="mb-2 flex items-center justify-between">
+              <h1 className="text-lg font-bold text-teal-700">NutriAcademy</h1>
+              <Button variant="ghost" onClick={logout} disabled={loadingLogout}>
+                <LogOut size={16} className="mr-2" />
+                {loadingLogout ? "Saindo..." : "Sair"}
+              </Button>
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {links.slice(0, 6).map((link) => {
+                const Icon = link.icon;
+                const active = pathname.startsWith(link.href);
+                return (
+                  <Link
+                    key={`mobile-${link.href}`}
+                    href={link.href}
+                    className={cn(
+                      "flex shrink-0 items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-medium",
+                      active
+                        ? "border-teal-600 bg-teal-600 text-white"
+                        : "border-slate-200 bg-slate-50 text-slate-600",
+                    )}
+                  >
+                    <Icon size={13} />
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
           <header className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <p className="text-sm text-slate-500">Gestao clinica nutricional</p>
-              <form onSubmit={handleGlobalSearch} className="flex w-full gap-2 md:w-auto">
+              <form onSubmit={handleGlobalSearch} className="grid w-full grid-cols-[1fr_auto] gap-2 md:flex md:w-auto">
                 <Input
                   placeholder="Busca global: nome, telefone ou tags..."
                   value={query}
@@ -95,6 +126,42 @@ export function AppShell({ children }: { children: ReactNode }) {
           {children}
         </main>
       </div>
+
+      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 px-3 py-2 shadow-[0_-4px_16px_rgba(15,23,42,0.08)] backdrop-blur md:hidden">
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
+          {[
+            { href: "/dashboard", label: "Inicio", icon: LayoutDashboard },
+            { href: "/patients", label: "Pacientes", icon: Users },
+            { href: "/recipes", label: "Receitas", icon: BookOpen },
+            { href: "/appointments", label: "Agenda", icon: CalendarDays },
+          ].map((item) => {
+            const Icon = item.icon;
+            const active = pathname.startsWith(item.href);
+            return (
+              <Link
+                key={`bottom-${item.href}`}
+                href={item.href}
+                className={cn(
+                  "flex flex-col items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-medium",
+                  active ? "text-teal-700" : "text-slate-500",
+                )}
+              >
+                <Icon size={16} />
+                {item.label}
+              </Link>
+            );
+          })}
+          <button
+            type="button"
+            onClick={logout}
+            disabled={loadingLogout}
+            className="flex flex-col items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-medium text-rose-600"
+          >
+            <LogOut size={16} />
+            Sair
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }
