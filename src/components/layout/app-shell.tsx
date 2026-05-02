@@ -76,37 +76,6 @@ export function AppShell({ children }: { children: ReactNode }) {
         </aside>
 
         <main className="flex-1">
-          <div className="mb-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm md:hidden">
-            <div className="mb-2 flex items-center justify-between">
-              <h1 className="text-lg font-bold text-teal-700">NutriAcademy</h1>
-              <Button variant="ghost" onClick={logout} disabled={loadingLogout}>
-                <LogOut size={16} className="mr-2" />
-                {loadingLogout ? "Saindo..." : "Sair"}
-              </Button>
-            </div>
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {links.slice(0, 6).map((link) => {
-                const Icon = link.icon;
-                const active = pathname.startsWith(link.href);
-                return (
-                  <Link
-                    key={`mobile-${link.href}`}
-                    href={link.href}
-                    className={cn(
-                      "flex shrink-0 items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-medium",
-                      active
-                        ? "border-teal-600 bg-teal-600 text-white"
-                        : "border-slate-200 bg-slate-50 text-slate-600",
-                    )}
-                  >
-                    <Icon size={13} />
-                    {link.label}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-
           <header className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <p className="text-sm text-slate-500">Gestao clinica nutricional</p>
