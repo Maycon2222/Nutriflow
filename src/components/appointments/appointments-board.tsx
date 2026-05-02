@@ -1,7 +1,7 @@
 "use client";
 
 import { AppointmentStatus, Patient } from "@prisma/client";
-import { CalendarCheck2, Trash2 } from "lucide-react";
+import { CalendarCheck2, FileText, Trash2 } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -110,6 +110,30 @@ export function AppointmentsBoard({
     }
   }
 
+  async function downloadAppointmentPdf(id: string) {
+    setError(null);
+    try {
+      const response = await fetch(`/api/appointments/${id}/pdf`);
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data?.error ?? "Falha ao gerar PDF.");
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `agendamento-${id}.pdf`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+      setSuccess("PDF do agendamento gerado com sucesso.");
+    } catch (downloadError) {
+      setError(downloadError instanceof Error ? downloadError.message : "Falha ao baixar PDF.");
+    }
+  }
+
   return (
     <div className="space-y-4">
       <Card>
@@ -166,6 +190,10 @@ export function AppointmentsBoard({
                   <Button variant="ghost" onClick={() => updateStatus(appointment.id, AppointmentStatus.CANCELED)}>
                     Cancelar
                   </Button>
+                  <Button variant="secondary" onClick={() => downloadAppointmentPdf(appointment.id)}>
+                    <FileText size={14} className="mr-1" />
+                    PDF
+                  </Button>
                   <Button variant="danger" onClick={() => removeAppointment(appointment.id)}>
                     <Trash2 size={14} />
                   </Button>
@@ -185,9 +213,15 @@ export function AppointmentsBoard({
               <p className="font-semibold text-slate-900">{appointment.patient.fullName}</p>
               <p className="text-sm text-slate-600">{formatDateTime(appointment.scheduledAt)}</p>
               {appointment.notes ? <p className="text-sm text-slate-500">{appointment.notes}</p> : null}
-              <span className={`mt-1 inline-flex rounded-full px-2 py-1 text-xs font-semibold ${statusStyle[appointment.status]}`}>
-                {statusLabel[appointment.status]}
-              </span>
+              <div className="mt-2 flex items-center gap-2">
+                <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${statusStyle[appointment.status]}`}>
+                  {statusLabel[appointment.status]}
+                </span>
+                <Button variant="secondary" onClick={() => downloadAppointmentPdf(appointment.id)}>
+                  <FileText size={14} className="mr-1" />
+                  PDF
+                </Button>
+              </div>
             </div>
           ))}
           {history.length === 0 ? <p className="text-sm text-slate-500">Sem historico de agendamentos.</p> : null}
