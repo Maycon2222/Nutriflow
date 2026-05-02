@@ -6,9 +6,8 @@ import { recipeSchema } from "@/utils/validation";
 
 export async function GET() {
   try {
-    const user = await requireCurrentUser();
+    await requireCurrentUser();
     const recipes = await prisma.recipe.findMany({
-      where: { userId: user.id },
       orderBy: { createdAt: "desc" },
     });
     return NextResponse.json(recipes);
