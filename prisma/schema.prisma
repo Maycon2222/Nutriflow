@@ -63,6 +63,32 @@ enum MacroMethod {
   G_PER_KG
 }
 
+enum RecommendationStage {
+  INITIAL_ESTIMATE
+  FINAL_PRESCRIPTION
+}
+
+enum ConfidenceLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum GoalPreset {
+  HYPERTROPHY
+  WEIGHT_LOSS
+  MAINTENANCE
+  RECOMPOSITION
+}
+
+enum ProfilePreset {
+  UNDERWEIGHT
+  NORMAL
+  OVERWEIGHT
+  OBESE
+  ATHLETE
+}
+
 enum SkinfoldProtocol {
   POLLOCK_7
   GUEDES_3
@@ -206,6 +232,13 @@ model EnergyCalculation {
   carbsKcal        Float           @default(0)
   proteinKcal      Float           @default(0)
   fatKcal          Float           @default(0)
+  recommendationStage RecommendationStage @default(INITIAL_ESTIMATE)
+  confidenceLevel  ConfidenceLevel @default(LOW)
+  goalPreset       GoalPreset?
+  profilePreset    ProfilePreset?
+  strategyLabel    String?
+  macroDiffKcal    Float?          @default(0)
+  macroDiffPercent Float?          @default(0)
   basalMetabolism  Float
   activityFactor   Float
   totalEnergySpend Float

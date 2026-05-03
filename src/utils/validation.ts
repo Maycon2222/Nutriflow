@@ -90,6 +90,10 @@ export const energyCalculationSchema = z
     carbsInput: z.coerce.number().positive(),
     proteinInput: z.coerce.number().positive(),
     fatInput: z.coerce.number().positive(),
+    recommendationStage: z.enum(["INITIAL_ESTIMATE", "FINAL_PRESCRIPTION"]).optional(),
+    goalPreset: z.enum(["HYPERTROPHY", "WEIGHT_LOSS", "MAINTENANCE", "RECOMPOSITION"]).optional(),
+    profilePreset: z.enum(["UNDERWEIGHT", "NORMAL", "OVERWEIGHT", "OBESE", "ATHLETE"]).optional(),
+    confidenceLevel: z.enum(["LOW", "MEDIUM", "HIGH"]).optional(),
   })
   .superRefine((input, ctx) => {
     if (input.macroMethod === MacroMethod.PERCENTAGE) {
@@ -101,6 +105,15 @@ export const energyCalculationSchema = z
           path: ["carbsInput"],
         });
       }
+      return;
+    }
+
+    if (input.carbsInput > 12 || input.proteinInput > 5 || input.fatInput > 4) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Valores de g/kg fora de limite de seguranca. Revise os macros.",
+        path: ["carbsInput"],
+      });
     }
   });
 

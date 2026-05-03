@@ -196,6 +196,9 @@ export default async function PatientProfilePage({ params }: { params: Promise<{
               <p>Metodo de macros: {macroMethodLabel[calc.macroMethod]}</p>
               <p>CHO: {calc.carbsGrams.toFixed(1)}g | PTN: {calc.proteinGrams.toFixed(1)}g | FAT: {calc.fatGrams.toFixed(1)}g</p>
               <p className="font-medium text-teal-700">Calorias sugeridas: {calc.suggestedKcal.toFixed(2)} kcal</p>
+              {calc.strategyLabel ? <p>Estrategia: {calc.strategyLabel}</p> : null}
+              <p>Confiabilidade: {calc.confidenceLevel}</p>
+              <p>Tipo: {calc.recommendationStage === "INITIAL_ESTIMATE" ? "Estimativa inicial" : "Prescricao final"}</p>
               <p>{calc.explanation}</p>
             </div>
           ))}
@@ -221,6 +224,8 @@ export default async function PatientProfilePage({ params }: { params: Promise<{
                 }
               : null
           }
+          hasAnamnese={patient.anamneses.length > 0}
+          hasPartialMeasures={patient.consultations.some((item) => Boolean(item.bodyMeasurements))}
         />
       </Card>
     </div>

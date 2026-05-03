@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/database/prisma";
 import { requireCurrentUser } from "@/services/session-service";
-import { calculateEnergy, calculateMacros } from "@/utils/energy";
+import { calculateEnergy, calculateMacros, computeConfidenceLevel } from "@/utils/energy";
 import { energyCalculationSchema } from "@/utils/validation";
 import { apiError } from "@/app/api/_helpers";
 
@@ -12,18 +12,35 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const body = await request.json();
     const parsed = energyCalculationSchema.parse(body);
 
-    const patient = await prisma.patient.findFirst({ where: { id, userId: user.id }, select: { id: true } });
-    if (!patient) return NextResponse.json({ error: "Paciente não encontrado." }, { status: 404 });
+    const patient = await prisma.patient.findFirst({
+      where: { id, userId: user.id },
+      select: {
+        id: true,
+        anamneses: { select: { id: true }, take: 1 },
+        assessments: { select: { bodyFatPercent: true }, take: 1 },
+        consultations: { select: { bodyMeasurements: true }, take: 3 },
+      },
+    });
+    if (!patient) return NextResponse.json({ error: "Paciente nao encontrado." }, { status: 404 });
 
-    const result = calculateEnergy(parsed);
+    const energy = calculateEnergy(parsed);
     const macros = calculateMacros({
       method: parsed.macroMethod,
       carbsInput: parsed.carbsInput,
       proteinInput: parsed.proteinInput,
       fatInput: parsed.fatInput,
-      suggestedKcal: result.suggestedKcal,
+      suggestedKcal: energy.suggestedKcal,
       weightKg: parsed.weightKg,
     });
+
+    const confidenceLevel =
+      parsed.confidenceLevel ??
+      computeConfidenceLevel({
+        hasAnamnese: patient.anamneses.length > 0,
+        hasAnthropometry: patient.assessments.length > 0,
+        hasBodyFat: patient.assessments.some((item) => item.bodyFatPercent > 0),
+        hasMeasurements: patient.consultations.some((item) => Boolean(item.bodyMeasurements)),
+      });
 
     const calculation = await prisma.energyCalculation.create({
       data: {
@@ -39,8 +56,24 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         carbInput: parsed.carbsInput,
         proteinInput: parsed.proteinInput,
         fatInput: parsed.fatInput,
-        ...result,
-        ...macros,
+        basalMetabolism: energy.basalMetabolism,
+        activityFactor: energy.activityFactor,
+        totalEnergySpend: energy.totalEnergySpend,
+        suggestedKcal: energy.suggestedKcal,
+        explanation: energy.explanation,
+        carbsGrams: macros.carbsGrams,
+        proteinGrams: macros.proteinGrams,
+        fatGrams: macros.fatGrams,
+        carbsKcal: macros.carbsKcal,
+        proteinKcal: macros.proteinKcal,
+        fatKcal: macros.fatKcal,
+        recommendationStage: parsed.recommendationStage ?? "INITIAL_ESTIMATE",
+        confidenceLevel,
+        goalPreset: parsed.goalPreset ?? energy.goalPreset,
+        profilePreset: parsed.profilePreset ?? energy.profilePreset,
+        strategyLabel: energy.strategyLabel,
+        macroDiffKcal: macros.diffKcal,
+        macroDiffPercent: macros.diffPercent,
       },
     });
 
