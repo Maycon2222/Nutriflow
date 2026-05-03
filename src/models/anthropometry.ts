@@ -25,6 +25,6 @@ export const PROTOCOL_FOLDS: Record<SkinfoldProtocol, Array<{ key: string; label
     { key: "triceps", label: "Triceps" },
     { key: "subscapular", label: "Subescapular" },
     { key: "suprailiac", label: "Suprailiaca" },
-    { key: "calf", label: "Panturrilha medial" },
+    { key: "biceps", label: "Bicipital" },
   ],
 };
