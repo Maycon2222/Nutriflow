@@ -153,21 +153,21 @@ export default async function HomePage() {
       </section>
 
       <section id="contato" className="mx-auto w-full max-w-6xl px-4 py-8">
-        <Card className="border-slate-800 bg-slate-900">
+        <div className="rounded-2xl border border-teal-700 bg-teal-700 p-5 shadow-sm">
           <h3 className="text-2xl font-bold text-white">Contato</h3>
-          <p className="mt-2 text-sm text-slate-200">Fale com nosso time para tirar duvidas e conhecer o fluxo ideal para sua clinica.</p>
+          <p className="mt-2 text-sm text-white/95">Fale com nosso time para tirar duvidas e conhecer o fluxo ideal para sua clinica.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <Link href="mailto:contato@nutriacademy.app" className="rounded-lg border border-slate-700 bg-slate-800 p-3 text-sm text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-700">
-              <Mail size={16} className="mb-2 text-teal-300" /> contato@nutriacademy.app
+            <Link href="mailto:contato@nutriacademy.app" className="rounded-lg border border-teal-200/60 bg-teal-800 p-3 text-sm text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-teal-900">
+              <Mail size={16} className="mb-2 text-teal-200" /> contato@nutriacademy.app
             </Link>
-            <Link href="tel:+5582999999999" className="rounded-lg border border-slate-700 bg-slate-800 p-3 text-sm text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-700">
-              <Phone size={16} className="mb-2 text-teal-300" /> +55 (82) 99999-9999
+            <Link href="tel:+5582999999999" className="rounded-lg border border-teal-200/60 bg-teal-800 p-3 text-sm text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-teal-900">
+              <Phone size={16} className="mb-2 text-teal-200" /> +55 (82) 99999-9999
             </Link>
-            <Link href="https://instagram.com/nutriacademy.app" className="rounded-lg border border-slate-700 bg-slate-800 p-3 text-sm text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-700">
-              <Activity size={16} className="mb-2 text-teal-300" /> @nutriacademy.app
+            <Link href="https://instagram.com/nutriacademy.app" className="rounded-lg border border-teal-200/60 bg-teal-800 p-3 text-sm text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-teal-900">
+              <Activity size={16} className="mb-2 text-teal-200" /> @nutriacademy.app
             </Link>
           </div>
-        </Card>
+        </div>
       </section>
 
       <section className="mx-auto w-full max-w-6xl px-4 py-10">
