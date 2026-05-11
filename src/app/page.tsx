@@ -9,10 +9,8 @@ import {
   HeartPulse,
   Mail,
   Phone,
-  Rocket,
   Target,
   UserRound,
-  Workflow,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { getCurrentUser } from "@/utils/auth";
@@ -155,18 +153,18 @@ export default async function HomePage() {
       </section>
 
       <section id="contato" className="mx-auto w-full max-w-6xl px-4 py-8">
-        <Card className="bg-slate-900 text-slate-100">
-          <h3 className="text-2xl font-bold">Contato</h3>
-          <p className="mt-2 text-sm text-slate-300">Fale com nosso time para tirar duvidas e conhecer o fluxo ideal para sua clinica.</p>
+        <Card className="border-slate-800 bg-slate-900">
+          <h3 className="text-2xl font-bold text-white">Contato</h3>
+          <p className="mt-2 text-sm text-slate-200">Fale com nosso time para tirar duvidas e conhecer o fluxo ideal para sua clinica.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <Link href="mailto:contato@nutriacademy.app" className="rounded-lg bg-white/10 p-3 text-sm transition hover:bg-white/20">
-              <Mail size={16} className="mb-2" /> contato@nutriacademy.app
+            <Link href="mailto:contato@nutriacademy.app" className="rounded-lg border border-slate-700 bg-slate-800 p-3 text-sm text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-700">
+              <Mail size={16} className="mb-2 text-teal-300" /> contato@nutriacademy.app
             </Link>
-            <Link href="tel:+5582999999999" className="rounded-lg bg-white/10 p-3 text-sm transition hover:bg-white/20">
-              <Phone size={16} className="mb-2" /> +55 (82) 99999-9999
+            <Link href="tel:+5582999999999" className="rounded-lg border border-slate-700 bg-slate-800 p-3 text-sm text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-700">
+              <Phone size={16} className="mb-2 text-teal-300" /> +55 (82) 99999-9999
             </Link>
-            <Link href="https://instagram.com/nutriacademy.app" className="rounded-lg bg-white/10 p-3 text-sm transition hover:bg-white/20">
-              <Activity size={16} className="mb-2" /> @nutriacademy.app
+            <Link href="https://instagram.com/nutriacademy.app" className="rounded-lg border border-slate-700 bg-slate-800 p-3 text-sm text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-700">
+              <Activity size={16} className="mb-2 text-teal-300" /> @nutriacademy.app
             </Link>
           </div>
         </Card>
